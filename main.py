@@ -19,7 +19,22 @@ async def ping(ctx):
 
 @client.command()
 async def coinflip(ctx):
-    result = random.choice(["Решка", "Орел"])
+    result = random.choice(["Ого! решка", "Вау! орел"])
     await ctx.send(result)
+
+@client.command()
+async def clear(ctx, amount=3):
+    if type(amount) != int:
+        return
+    if amount <= 0:
+        return
+
+    if ctx.channel.permissions_for(ctx.author).manage_messages == True:
+        await ctx.channel.purge(limit=amount+1)
+
+@client.command()
+async def help(ctx, category=None):
+    ctx.send(config.help(category))
+    
 
 client.run(config.TOKEN)
