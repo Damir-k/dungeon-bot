@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import config
 import random
+import datetime
 
 client = commands.Bot(command_prefix=">")
 
@@ -45,5 +46,13 @@ async def kick(ctx, member:discord.Member, *, reason=None):
 async def ban(ctx, member:discord.Member, *, reason=None):
     await member.ban(reason=reason)
     await ctx.send(member.mention + ", ложись спатки)")
+
+@client.command()
+async def age(ctx):
+    time_joined = ctx.author.joined_at
+    current_time = datetime.datetime.now()
+    time_passed = current_time - time_joined
+    await ctx.send(ctx.author.mention + " на сервере " + str(time_passed.days) + " дней, " + str(time_passed.seconds // 3600) + " часов")
+
 
 client.run(config.TOKEN)
