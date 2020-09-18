@@ -33,7 +33,7 @@ async def clear(ctx, amount=3):
         await ctx.channel.purge(limit=amount+1)
 
 @client.command()
-async def help(ctx, category=None):
+async def helpme(ctx, category=None):
     ctx.send(config.help(category))
     
 
