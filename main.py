@@ -35,6 +35,15 @@ async def clear(ctx, amount=3):
 @client.command()
 async def helpme(ctx, category=None):
     await ctx.send(config.help(category))
-    
+
+@client.command()
+async def kick(ctx, member:discord.Member, *, reason=None):
+    await member.kick(reason=reason)
+    await ctx.send(member.mention + ", увидимся!")
+
+@client.command()
+async def ban(ctx, member:discord.Member, *, reason=None):
+    await member.ban(reason=reason)
+    await ctx.send(member.mention + ", ложись спатки)")
 
 client.run(config.TOKEN)
