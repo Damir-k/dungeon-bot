@@ -34,7 +34,7 @@ async def clear(ctx, amount=3):
 
 @client.command()
 async def helpme(ctx, category=None):
-    ctx.send(config.help(category))
+    await ctx.send(config.help(category))
     
 
 client.run(config.TOKEN)
