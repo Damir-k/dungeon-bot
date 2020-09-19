@@ -63,6 +63,24 @@ async def ban(ctx, member:discord.Member, *, reason=None):
         await member.ban(reason=reason)
     await ctx.send("Ложись спатки, " + member.mention)
 
+@client.command(aliases=["unban", "pardon"])
+async def unban(ctx, *, member):
+    if ctx.channel.permissions_for(ctx.author).ban_members == True:
+        banned_users = ctx.guild.bans()
+        member_name, member_discriminator = member.split("#")
+
+        for ban_entry in banned_users:
+            user = ban_entry.user
+
+            if (user.name, user.discriminator) == (member_name, member_discriminator):
+                await ctx.guild.unban(user)
+                await ctx.send("Мы прощаем тебя, " + user.mention())
+                return
+
+        
+        
+        
+
 
 
 client.run(config.TOKEN)
