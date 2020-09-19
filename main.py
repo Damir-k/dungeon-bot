@@ -46,7 +46,7 @@ async def members(ctx):
     await ctx.send(f"На сервере {ctx.guild.member_count - bots} человек")
 
 #
-# moder-only
+#  moder-only
 #
 @client.command()
 async def clear(ctx, amount=3):
@@ -62,13 +62,13 @@ async def clear(ctx, amount=3):
 async def kick(ctx, member:discord.Member, *, reason=None):
     if ctx.channel.permissions_for(ctx.author).kick_members == True:
         await member.kick(reason=reason)
-    await ctx.send(member.mention + ", увидимся!")
+        await ctx.send(member.mention + ", увидимся!")
 
 @client.command()
 async def ban(ctx, member:discord.Member, *, reason=None):
     if ctx.channel.permissions_for(ctx.author).ban_members == True:
         await member.ban(reason=reason)
-    await ctx.send("Ложись спатки, " + member.mention)
+        await ctx.send("Ложись спатки, " + member.mention)
 
 @client.command(aliases=["pardon"])
 async def unban(ctx, *, member):
@@ -83,6 +83,21 @@ async def unban(ctx, *, member):
                 await ctx.guild.unban(user)
                 await ctx.send("Мы прощаем тебя, " + user.name)
                 return
+
+#
+#  event tracking
+#
+@client.event
+async def on_member_joined(member):
+    await client.get_channel(756875879623426068).edit(name="Участников 🌏: " + client.get_guild(489852374433923074).member_count)
+
+@client.event
+async def on_member_remove(member):
+    await client.get_channel(756875879623426068).edit(name="Участников 🌏: " + client.get_guild(489852374433923074).member_count)
+
+@client.event
+async def on_voice_state_update(member, before, after):
+    await client.get_channel(756875879623426068).edit(name="Участников 🌏: " + len(after.channel.members))
 
 
 
