@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import config
 import random
 import datetime
@@ -10,6 +10,7 @@ client.remove_command("help")
 #  initialization
 @client.event
 async def on_ready():
+    change_online.start()
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="за джастиком"))
     print('Logged in!')
 
@@ -95,9 +96,17 @@ async def on_member_joined(member):
 async def on_member_remove(member):
     await client.get_channel(756875879623426068).edit(name="Участников 🌏: " + str(client.get_guild(489852374433923074).member_count))
 
-@client.event
-async def on_voice_state_update(member, before, after):
-    await client.get_channel(756876293676728360).edit(name="В войсе 🪐: " + str(len(after.channel.members)))
+#
+#  background tasks
+#
+@tasks.loop(seconds=60)
+async def change_online():
+    online = 0
+    for member in client.get_guild(489852374433923074).members:
+        if member.status == discord.Status.online:
+            online += 1
+    
+    await client.get_channel(756876293676728360).edit(name="Онлайн 🪐: " + str(online))
 
 
 
