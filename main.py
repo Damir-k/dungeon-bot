@@ -5,6 +5,7 @@ import random
 import datetime
 
 client = commands.Bot(command_prefix=">")
+client.remove_command("help")
 
 #  initialization
 @client.event
@@ -27,9 +28,9 @@ async def coinflip(ctx):
     result = random.choice(["Ого! решка", "Вау! орел"])
     await ctx.send(result)
 
-@client.command()
-async def helpme(ctx, category=None):
-    await ctx.send(config.help(category))
+@client.command(aliases=["help"])
+async def helpme(ctx, category="general"):
+    await ctx.send(config.help(category.lower()))
 
 @client.command()
 async def age(ctx):
@@ -37,6 +38,11 @@ async def age(ctx):
     current_time = datetime.datetime.now()
     time_passed = current_time - time_joined
     await ctx.send(ctx.author.mention + " на сервере " + str(time_passed.days) + " дней, " + str(time_passed.seconds // 3600) + " часов")
+
+@client.command()
+async def members(ctx):
+    bots = len(ctx.guild.get_role(489877721439010847).members)
+    await ctx.send(f"На сервере {ctx.guild.member_count - bots} человек")
 
 #
 # moder-only
@@ -63,10 +69,10 @@ async def ban(ctx, member:discord.Member, *, reason=None):
         await member.ban(reason=reason)
     await ctx.send("Ложись спатки, " + member.mention)
 
-@client.command(aliases=["unban", "pardon"])
+@client.command(aliases=["pardon"])
 async def unban(ctx, *, member):
     if ctx.channel.permissions_for(ctx.author).ban_members == True:
-        banned_users = ctx.guild.bans()
+        banned_users = await ctx.guild.bans()
         member_name, member_discriminator = member.split("#")
 
         for ban_entry in banned_users:
@@ -74,12 +80,8 @@ async def unban(ctx, *, member):
 
             if (user.name, user.discriminator) == (member_name, member_discriminator):
                 await ctx.guild.unban(user)
-                await ctx.send("Мы прощаем тебя, " + user.mention())
+                await ctx.send("Мы прощаем тебя, " + user.name)
                 return
-
-        
-        
-        
 
 
 
