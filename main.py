@@ -6,10 +6,14 @@ import datetime
 
 client = commands.Bot(command_prefix=">")
 
+#  initialization
 @client.event
 async def on_ready():
     print('Logged in!')
 
+#
+#  general commands
+#  
 @client.command()
 async def wow(ctx):
     await ctx.send(":clown:, что сказать")
@@ -24,6 +28,20 @@ async def coinflip(ctx):
     await ctx.send(result)
 
 @client.command()
+async def helpme(ctx, category=None):
+    await ctx.send(config.help(category))
+
+@client.command()
+async def age(ctx):
+    time_joined = ctx.author.joined_at
+    current_time = datetime.datetime.now()
+    time_passed = current_time - time_joined
+    await ctx.send(ctx.author.mention + " на сервере " + str(time_passed.days) + " дней, " + str(time_passed.seconds // 3600) + " часов")
+
+#
+# moder-only
+#
+@client.command()
 async def clear(ctx, amount=3):
     if type(amount) != int:
         return
@@ -34,25 +52,17 @@ async def clear(ctx, amount=3):
         await ctx.channel.purge(limit=amount+1)
 
 @client.command()
-async def helpme(ctx, category=None):
-    await ctx.send(config.help(category))
-
-@client.command()
 async def kick(ctx, member:discord.Member, *, reason=None):
-    await member.kick(reason=reason)
+    if ctx.channel.permissions_for(ctx.author).kick_members == True:
+        await member.kick(reason=reason)
     await ctx.send(member.mention + ", увидимся!")
 
 @client.command()
 async def ban(ctx, member:discord.Member, *, reason=None):
-    await member.ban(reason=reason)
-    await ctx.send(member.mention + ", ложись спатки)")
+    if ctx.channel.permissions_for(ctx.author).ban_members == True:
+        await member.ban(reason=reason)
+    await ctx.send("Ложись спатки, " + member.mention)
 
-@client.command()
-async def age(ctx):
-    time_joined = ctx.author.joined_at
-    current_time = datetime.datetime.now()
-    time_passed = current_time - time_joined
-    await ctx.send(ctx.author.mention + " на сервере " + str(time_passed.days) + " дней, " + str(time_passed.seconds // 3600) + " часов")
 
 
 client.run(config.TOKEN)
