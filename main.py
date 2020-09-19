@@ -89,15 +89,15 @@ async def unban(ctx, *, member):
 #
 @client.event
 async def on_member_joined(member):
-    await client.get_channel(756875879623426068).edit(name="Участников 🌏: " + client.get_guild(489852374433923074).member_count)
+    await client.get_channel(756875879623426068).edit(name="Участников 🌏: " + str(client.get_guild(489852374433923074).member_count))
 
 @client.event
 async def on_member_remove(member):
-    await client.get_channel(756875879623426068).edit(name="Участников 🌏: " + client.get_guild(489852374433923074).member_count)
+    await client.get_channel(756875879623426068).edit(name="Участников 🌏: " + str(client.get_guild(489852374433923074).member_count))
 
 @client.event
 async def on_voice_state_update(member, before, after):
-    await client.get_channel(756875879623426068).edit(name="Участников 🌏: " + len(after.channel.members))
+    await client.get_channel(756876293676728360).edit(name="В войсе 🪐: " + str(len(after.channel.members)))
 
 
 
