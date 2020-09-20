@@ -36,19 +36,19 @@ class Casino(commands.Cog):
     @commands.command()
     async def bet(self, ctx, amount:int):
         if ctx.channel.id == 757288748672221265 and amount >= 1 and self.accounts[ctx.author.id] >= amount:
-            message = ctx.send("Ставка сделана.")
+            message = await ctx.send(content="Ставка сделана")
             await asyncio.sleep(0.5)
-            await message.edit("Ставка сделана..")
+            await message.edit(content="Ставка сделана:arrow_right:")
             await asyncio.sleep(0.5)
-            await message.edit("Ставка сделана...")
+            await message.edit(content="Ставка сделана:arrow_right::arrow_right:")
             await asyncio.sleep(0.5)
             if random.choice([True, False]):
-                await message.edit("Ставка сделана...:white_check_mark:")
+                await message.edit(content=f"Ставка сделана:arrow_right::arrow_right::arrow_right::white_check_mark:\nВы выйграли {amount} монет!")
                 self.accounts[ctx.author.id] += amount
             else:
-                await message.edit("Ставка сделана...:no_entry:")
+                await message.edit(content=f"Ставка сделана:arrow_right::arrow_right::arrow_right::no_entry:\nК сожалению вы проиграли {amount} монет!")
                 self.accounts[ctx.author.id] -= amount
-    
+
     #
     #  saving/loading casino status
     #
