@@ -8,6 +8,7 @@ class Events(commands.Cog):
     
     @commands.Cog.listener()
     async def on_ready(self):
+        self.client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="за джастиком"))
         print("Ready to go")
 
     @commands.Cog.listener()
@@ -17,6 +18,7 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         await self.client.get_channel(756875879623426068).edit(name="Участников 🌏: " + str(self.client.get_guild(489852374433923074).member_count))
+
 
 def setup(client):
     client.add_cog(Events(client))
