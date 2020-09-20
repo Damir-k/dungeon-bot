@@ -14,8 +14,8 @@ def is_developer(ctx):
 
 @client.command()
 @commands.check(is_developer)
-async def load(self, ctx, extention):
-    self.client.load_extension(f"cogs.{extention}")
+async def load(ctx, extention):
+    client.load_extension(f"cogs.{extention}")
     await ctx.send(f"Модуль {extention} успешно загружен")
 
 for filename in os.listdir("./cogs"):
