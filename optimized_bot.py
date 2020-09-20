@@ -12,16 +12,20 @@ def is_developer(ctx):
 @commands.check(is_developer)
 async def load(ctx, extention):
     client.load_extension(f"cogs.{extention}")
+    await ctx.send(f"Модуль {extention} успешно загружен")
 
 @client.command()
 @commands.check(is_developer)
 async def unload(ctx, extention):
-    client.load_extension(f"cogs.{extention}")
+    client.unload_extension(f"cogs.{extention}")
+    await ctx.send(f"Модуль {extention} успешно остановлен")
 
 @client.command()
 @commands.check(is_developer)
 async def reload(ctx, extention):
+    client.unload_extension(f"cogs.{extention}")
     client.load_extension(f"cogs.{extention}")
+    await ctx.send(f"Модуль {extention} успешно перезагружен")
 
 
 for filename in os.listdir("./cogs"):
