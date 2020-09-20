@@ -41,6 +41,30 @@ class ModOnly(commands.Cog):
                 await ctx.guild.unban(user)
                 await ctx.send("Мы прощаем тебя, " + user.name)
                 return
+    
+    #
+    #  error handlers
+    #
+    @clear.error
+    async def clear_err(self, ctx, err):
+        if isinstance(err, commands.MissingPermissions):
+            print("clear: недопустимо выполнение")
+    
+    @kick.error
+    async def kick_err(self, ctx, err):
+        if isinstance(err, commands.MissingPermissions):
+            print("kick: недопустимо выполнение")
+
+    @ban.error
+    async def ban_err(self, ctx, err):
+        if isinstance(err, commands.MissingPermissions):
+            print("ban: недопустимо выполнение")
+    
+    @unban.error
+    async def unban_err(self, ctx, err):
+        if isinstance(err, commands.MissingPermissions):
+            print("unban: недопустимо выполнение")
+
 
 def setup(client):
     client.add_cog(ModOnly(client))

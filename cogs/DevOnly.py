@@ -25,6 +25,19 @@ class DevOnly(commands.Cog):
         self.client.unload_extension(f"cogs.{extention}")
         self.client.load_extension(f"cogs.{extention}")
         await ctx.send(f"Модуль {extention} успешно перезагружен")
+    
+    #
+    #  error handlers
+    #
+    @unload.error
+    async def unload_err(self, ctx, err):
+        if isinstance(err, commands.CheckFailure):
+            print("unload:", ctx.author, "попытался исполнить команду")
+    
+    @reload.error
+    async def reload_err(self, ctx, err):
+        if isinstance(err, commands.CheckFailure):
+            print("reload:", ctx.author, "попытался исполнить команду")
 
 def setup(client):
     client.add_cog(DevOnly(client))

@@ -38,6 +38,11 @@ async def load(ctx, extention):
     client.load_extension(f"cogs.{extention}")
     await ctx.send(f"Модуль {extention} успешно загружен")
 
+@load.error
+async def load_err(ctx, err):
+    if isinstance(err, commands.CheckFailure):
+        print("load:", ctx.author, "попытался исполнить команду")
+
 for filename in os.listdir("./cogs"):
     if filename.endswith(".py"):
         client.load_extension(f"cogs.{filename[:-3]}")

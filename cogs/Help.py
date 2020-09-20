@@ -42,7 +42,7 @@ class Help(commands.Cog):
         self.client = client
 
     @commands.command(aliases=["helpme"])
-    async def help(self, ctx, category="general"):
+    async def help(self, ctx, *, category="general"):
         category = category.lower()
         if category == "general":
             await ctx.send(general)
@@ -50,6 +50,8 @@ class Help(commands.Cog):
             await ctx.send(modonly)
         elif category == "devonly":
             await ctx.send(devonly)
+        else:
+            print("help: неизвестная категория", category)
 
 
 def setup(client):

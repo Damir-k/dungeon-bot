@@ -32,6 +32,23 @@ class General(commands.Cog):
     async def members(self, ctx):
         bots = len(ctx.guild.get_role(489877721439010847).members)
         await ctx.send(f"На сервере {ctx.guild.member_count - bots} человек")
+    
+    #
+    #  error handlers
+    #
+    @age.error
+    async def age_err(self, ctx, err):
+        if isinstance(err, AttributeError):
+            print("age: недопустимо выполнение")
+        else:
+            print(err)
+    
+    @members.error
+    async def members_err(self, ctx, err):
+        if isinstance(err, AttributeError):
+            print("members: недопустимо выполнение")
+        else:
+            print(err)
 
 
 def setup(client):

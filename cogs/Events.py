@@ -8,8 +8,7 @@ class Events(commands.Cog):
     
     @commands.Cog.listener()
     async def on_ready(self):
-        self.client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="за джастиком"))
-        print("Ready to go")
+        await self.client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="за джастиком"))
 
     @commands.Cog.listener()
     async def on_member_joined(self, member):
