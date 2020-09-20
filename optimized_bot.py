@@ -6,12 +6,10 @@ from discord.ext import commands
 client = commands.Bot(command_prefix=">")
 
 def is_developer(ctx):
-
     DEVELOPERS = [
         433668397599948810, #  HRODGRIM
         357079203235233792  #  Eugene
     ]
-
     return ctx.author.id in DEVELOPERS
 
 @client.command()
