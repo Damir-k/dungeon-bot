@@ -1,4 +1,10 @@
 TOKEN = "NzU2NTE4ODUzMDcyMTI1OTgy.X2TBFg.sS2J4FZW4I3c9hur4H5jD76Sw_4"
+
+DEVELOPERS = [
+    433668397599948810, #  HRODGRIM
+    357079203235233792  #  Eugene
+]
+
 GENERAL = '''Префикс: >
 
 Список всех команд: 
