@@ -16,11 +16,11 @@ async def on_ready():
 @tasks.loop(seconds=60)
 async def update_online():
     online = 0
-    for member in self.client.get_guild(489852374433923074).members:
+    for member in client.get_guild(489852374433923074).members:
         if member.status == discord.Status.online:
             online += 1
     
-    await self.client.get_channel(756876293676728360).edit(name="Онлайн 🪐: " + str(online))
+    await client.get_channel(756876293676728360).edit(name="Онлайн 🪐: " + str(online))
 
 #
 # load Cogs
