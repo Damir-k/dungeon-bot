@@ -1,5 +1,6 @@
 import asyncio
 import random
+import math
 import discord
 from discord.ext import commands
 
@@ -9,6 +10,12 @@ def is_developer(ctx):
         357079203235233792  #  Eugene
     ]
     return ctx.author.id in DEVELOPERS
+
+def win_chance(x):
+    x /= 10000
+    up = math.exp(x) - math.exp(-x)
+    down = math.exp(x) + math.exp(-x)
+    return (up / down) / 4 + 0.5
 
 class Casino(commands.Cog):
     
@@ -36,18 +43,19 @@ class Casino(commands.Cog):
     @commands.command()
     async def bet(self, ctx, amount:int):
         if ctx.channel.id == 757288748672221265 and amount >= 1 and self.accounts[ctx.author.id] >= amount:
-            message = await ctx.send(content="Ставка сделана")
-            await asyncio.sleep(0.5)
-            await message.edit(content="Ставка сделана:arrow_right:")
-            await asyncio.sleep(0.5)
-            await message.edit(content="Ставка сделана:arrow_right::arrow_right:")
-            await asyncio.sleep(0.5)
-            if random.choice([True, False]):
-                await message.edit(content=f"Ставка сделана:arrow_right::arrow_right::arrow_right::white_check_mark:\nВы выйграли {amount} монет!")
+            if random.random() > win_chance(amount):
                 self.accounts[ctx.author.id] += amount
+                content = f"Ставка сделана... Вы выйграли {amount}"
             else:
-                await message.edit(content=f"Ставка сделана:arrow_right::arrow_right::arrow_right::no_entry:\nК сожалению вы проиграли {amount} монет!")
                 self.accounts[ctx.author.id] -= amount
+                content = f"Ставка сделана... Вы проиграли {amount}"
+            
+            message = await ctx.send(content="Ставка сделана...")
+            await asyncio.sleep(1)
+
+            await message.edit(content=content)
+            
+
 
     #
     #  saving/loading casino status
