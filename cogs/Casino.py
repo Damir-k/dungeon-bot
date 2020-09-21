@@ -12,10 +12,8 @@ def is_developer(ctx):
     return ctx.author.id in DEVELOPERS
 
 def win_chance(x):
-    x /= 10000
-    up = math.exp(x) - math.exp(-x)
-    down = math.exp(x) + math.exp(-x)
-    return (up / down) / 4 + 0.5
+    x /= 5000
+    return (x / (1 + abs(x))) / 4 + 0.5
 
 class Casino(commands.Cog):
     
@@ -43,7 +41,7 @@ class Casino(commands.Cog):
     @commands.command()
     async def bet(self, ctx, amount:int):
         if ctx.channel.id == 757288748672221265 and amount >= 1 and self.accounts[ctx.author.id] >= amount:
-            if random.random() > win_chance(amount):
+            if random.random() < win_chance(amount):
                 self.accounts[ctx.author.id] += amount
                 content = f"Ставка сделана... Вы выйграли {amount}"
             else:
