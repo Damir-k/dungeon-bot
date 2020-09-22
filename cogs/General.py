@@ -17,11 +17,6 @@ class General(commands.Cog):
         await ctx.send(f"пинг бота: {round(self.client.latency * 1000)}ms")
 
     @commands.command()
-    async def coinflip(self, ctx):
-        result = random.choice(["Ого! решка", "Вау! орел"])
-        await ctx.send(result)
-
-    @commands.command()
     async def age(self, ctx):
         time_joined = ctx.author.joined_at
         current_time = datetime.datetime.now()
