@@ -32,7 +32,7 @@ def is_developer(ctx):
     ]
     return ctx.author.id in DEVELOPERS
 
-@client.command(aliases = ["Загрузить"])
+@client.command(aliases = ["загрузить"])
 @commands.check(is_developer)
 async def load(ctx, extention):
     client.load_extension(f"cogs.{extention}")

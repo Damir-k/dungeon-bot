@@ -1,10 +1,12 @@
 import asyncio
+import humanize
 import random
 import math
 import discord
 from discord.ext import commands
 
 UNIT = "Ď"
+_t = humanize.i18n.activate("ru_RU")
 
 def is_developer(ctx):
     DEVELOPERS = [
@@ -20,7 +22,7 @@ class Casino(commands.Cog):
         self.accounts = {}
         self.invites = {}
     
-    @commands.command(aliases=["ставка"])
+    @commands.command(aliases=["ставка", "bet", "50-50", "challenge"])
     async def coinflip(self, ctx, member:discord.Member, amount):
         if ctx.channel.id == 757288748672221265:
             amount = int(amount)
@@ -29,15 +31,15 @@ class Casino(commands.Cog):
                 if result < 0.001:
                     await ctx.send(f"{ctx.author.mention}Погоди ка... Монета упала на ребро?.. Поздравляю! В честь такого события даю тебе x100 выйгрыш!")
                     self.accounts[ctx.author.id] += amount * 100
-                elif result < 0.455:
-                    await ctx.send(f"{ctx.author.mention}Ты выйграл {amount}{UNIT}!")
+                elif result < 0.52:
+                    await ctx.send(f"{ctx.author.mention}Ты выйграл {humanize.intcomma(amount)}{UNIT}!")
                     self.accounts[ctx.author.id] += amount
                 else:
-                    await ctx.send(f"{ctx.author.mention}Ты проиграл {amount}{UNIT}!")
+                    await ctx.send(f"{ctx.author.mention}Ты проиграл {humanize.intcomma(amount)}{UNIT}!")
                     self.accounts[ctx.author.id] -= amount
             elif self.accounts[member.id] >= amount and self.accounts[ctx.author.id] >= amount:
                 random_key = random.randint(1, 10**4)
-                await ctx.send(f"{member.mention}, Вас вызывают на дуэль! Ставка: {amount}")
+                await ctx.send(f"{member.mention}, Вас вызывают на дуэль! Ставка: {humanize.intcomma(amount)}")
                 self.invites[ctx.author.id] = (member.id, random_key, amount)
                 await asyncio.sleep(120)
                 if self.invites[ctx.author.id] == (member.id, random_key, amount):
@@ -46,23 +48,23 @@ class Casino(commands.Cog):
         else:
             await ctx.author.send("Эта команда доступна только в канале #🎰╰╮казино")
 
-    @commands.command()
+    @commands.command(aliases=["принять", "ok"])
     async def accept(self, ctx, member:discord.Member):
         if ctx.channel.id == 757288748672221265:
             if member.id in self.invites.keys():
                 amount = self.invites[member.id][2]
                 if self.invites[member.id][0] == ctx.author.id:
                     del self.invites[member.id]
-                    await ctx.send(f"Ставки по {amount}{UNIT} приняты!")
+                    await ctx.send(f"Ставки по {humanize.intcomma(amount)}{UNIT} приняты!")
                     await asyncio.sleep(2)
                     if random.random() < 0.5:
                         self.accounts[member.id] += amount
                         self.accounts[ctx.author.id] -= amount
-                        await ctx.send(f"{member.mention} Выйграл! Ему достается {amount}{UNIT}")
+                        await ctx.send(f"{member.mention} Выйграл! Ему достается {humanize.intcomma(amount)}{UNIT}")
                     else:
                         self.accounts[member.id] -= amount
                         self.accounts[ctx.author.id] += amount
-                        await ctx.send(f"{ctx.author.mention} Выйграл! Ему достается {amount}{UNIT}")
+                        await ctx.send(f"{ctx.author.mention} Выйграл! Ему достается {humanize.intcomma(amount)}{UNIT}")
                 else:
                     await ctx.author.send("Этот человек отправлял запрос не вам!")
             else:
@@ -70,7 +72,7 @@ class Casino(commands.Cog):
         else:
             await ctx.author.send("Эта команда доступна только в канале #🎰╰╮казино")
 
-    @commands.command(aliases=["баланс"])
+    @commands.command(aliases=["баланс", "coins", "purse"])
     async def balance(self, ctx):
         if ctx.channel.id == 757288748672221265:
             await ctx.send(f"{ctx.author.mention}, у вас на балансе {self.accounts[ctx.author.id]}{UNIT}")
