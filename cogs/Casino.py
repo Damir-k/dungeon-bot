@@ -23,10 +23,10 @@ class Casino(commands.Cog):
         self.invites = {}
     
     @commands.command(aliases=["ставка", "bet", "50-50", "challenge"])
-    async def coinflip(self, ctx, member:discord.Member, amount):
+    async def coinflip(self, ctx, amount:int, member:discord.Member=None):
         if ctx.channel.id == 757288748672221265:
             amount = int(amount)
-            if member.id == 756518853072125982 and self.accounts[ctx.author.id] >= amount: #  is it me
+            if member.id == 756518853072125982 and self.accounts[ctx.author.id] >= amount >= 1: #  is it me
                 result = random.random()
                 if result < 0.001:
                     await ctx.send(f"{ctx.author.mention}Погоди ка... Монета упала на ребро?.. Поздравляю! В честь такого события даю тебе x100 выйгрыш!")
@@ -37,7 +37,7 @@ class Casino(commands.Cog):
                 else:
                     await ctx.send(f"{ctx.author.mention}Ты проиграл {humanize.intcomma(amount)}{UNIT}!")
                     self.accounts[ctx.author.id] -= amount
-            elif self.accounts[member.id] >= amount and self.accounts[ctx.author.id] >= amount:
+            elif self.accounts[member.id] >= amount and self.accounts[ctx.author.id] >= amount >= 1:
                 random_key = random.randint(1, 10**4)
                 await ctx.send(f"{member.mention}, Вас вызывают на дуэль! Ставка: {humanize.intcomma(amount)}")
                 self.invites[ctx.author.id] = (member.id, random_key, amount)
