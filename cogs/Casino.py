@@ -20,7 +20,7 @@ class Casino(commands.Cog):
         self.accounts = {}
         self.invites = {}
     
-    @commands.command(aliases=["bet", "50-50", "challenge"])
+    @commands.command(aliases=["ставка"])
     async def coinflip(self, ctx, member:discord.Member, amount):
         if ctx.channel.id == 757288748672221265:
             amount = int(amount)
@@ -73,7 +73,7 @@ class Casino(commands.Cog):
         else:
             await ctx.author.send("Эта команда доступна только в канале #🎰╰╮казино")
 
-    @commands.command(aliases=["coins", "purse"])
+    @commands.command(aliases=["баланс"])
     async def balance(self, ctx):
         if ctx.channel.id == 757288748672221265:
             await ctx.send(f"{ctx.author.mention}, у вас на балансе {self.accounts[ctx.author.id]}{UNIT}")
