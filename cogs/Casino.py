@@ -51,20 +51,23 @@ class Casino(commands.Cog):
         if ctx.channel.id == 757288748672221265:
             if member.id in self.invites.keys():
                 amount = self.invites[member.id][2]
-                if self.invites[member.id][0] == ctx.author.id:
-                    del self.invites[member.id]
-                    await ctx.send(f"Ставки по {amount}{UNIT} приняты!")
-                    await asyncio.sleep(2)
-                    if random.random() < 0.5:
-                        self.accounts[member.id] += amount
-                        self.accounts[ctx.author.id] -= amount
-                        await ctx.send(f"{member.mention} Выйграл! Ему достается {amount}{UNIT}")
+                if self.accounts[member.id] >= amount and self.accounts[ctx.author.id] >= amount:
+                    if self.invites[member.id][0] == ctx.author.id:
+                        del self.invites[member.id]
+                        await ctx.send(f"Ставки по {amount}{UNIT} приняты!")
+                        await asyncio.sleep(2)
+                        if random.random() < 0.5:
+                            self.accounts[member.id] += amount
+                            self.accounts[ctx.author.id] -= amount
+                            await ctx.send(f"{member.mention} Выйграл! Ему достается {amount}{UNIT}")
+                        else:
+                            self.accounts[member.id] -= amount
+                            self.accounts[ctx.author.id] += amount
+                            await ctx.send(f"{ctx.author.mention} Выйграл! Ему достается {amount}{UNIT}")
                     else:
-                        self.accounts[member.id] -= amount
-                        self.accounts[ctx.author.id] += amount
-                        await ctx.send(f"{ctx.author.mention} Выйграл! Ему достается {amount}{UNIT}")
+                        await ctx.author.send("Этот человек отправлял запрос не вам!")
                 else:
-                    await ctx.author.send("Этот человек отправлял запрос не вам!")
+                    await ctx.author.send("У вас или у дуэлянта не хватает монет!")
             else:
                 await ctx.author.send("Этот человек не отправлял вам запрос в течении последней минуты!")
         else:
