@@ -146,14 +146,14 @@ class Casino(commands.Cog):
     #
     #  tasks
     #
-    @tasks.loop(minutes=30)
+    @tasks.loop(minutes=60)
     async def giveaway1_task(self):
         content = f"@here Проводится раздача коинов по {self.giveaway1_amount}{UNIT} на человека! Чтобы забрать свою введите команду >claim"
         message = await self.client.get_channel(757288748672221265).send(content)
 
         self.giveaway1_claimed = []
         self.giveaway1_claim = True
-        await asyncio.sleep(900)
+        await asyncio.sleep(1800)
         self.giveaway1_claim = False
 
         await message.delete()
