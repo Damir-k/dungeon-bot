@@ -100,9 +100,12 @@ class Casino(commands.Cog):
     @commands.command()
     @commands.check(is_developer)
     async def give(self, ctx, member:discord.Member, amount:int):
-        if amount < self.bank and amount > 0:
+        if amount > 0 and amount < self.bank:
             self.accounts[member.id] += amount
-        elif 
+            self.bank -= amount
+        elif amount < 0:
+            self.accounts[member.id] += amount
+            self.bank += amount
     
     @commands.command()
     @commands.check(is_developer)
