@@ -3,7 +3,7 @@ import humanize
 import random
 import math
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 UNIT = "Ď"
 _t = humanize.i18n.activate("ru_RU")
@@ -15,29 +15,39 @@ def is_developer(ctx):
     ]
     return ctx.author.id in DEVELOPERS
 
+def win_chance(x, a, b):
+    x /= a
+    return 0.5 * (abs(x+1) + 1) / (x+1) - b
+
+
 class Casino(commands.Cog):
     
     def __init__(self, client):
         self.client = client
         self.accounts = {}
         self.invites = {}
+        self.win_chance_a = 45
+        self.win_chance_b = 0.005
+        self.bank = 100000
+        self.giveaway1_amount = 200
+        self.giveaway1_claim = False
+        self.giveaway1_claimed = []
     
     @commands.command(aliases=["ставка", "bet", "50-50", "challenge"])
     async def coinflip(self, ctx, amount:int, member:discord.Member=None):
         if ctx.channel.id == 757288748672221265:
             amount = int(amount)
-            if member.id == 756518853072125982 and self.accounts[ctx.author.id] >= amount >= 1: #  is it me
+            if member == None and self.accounts[ctx.author.id] >= amount >= 20: #  is it me
                 result = random.random()
-                if result < 0.001:
-                    await ctx.send(f"{ctx.author.mention}Погоди ка... Монета упала на ребро?.. Поздравляю! В честь такого события даю тебе x100 выйгрыш!")
-                    self.accounts[ctx.author.id] += amount * 100
-                elif result < 0.52:
+                if result < win_chance(self.accounts[ctx.author.id], self.win_chance_a, self.win_chance_b) and amount < self.bank:
                     await ctx.send(f"{ctx.author.mention}Ты выйграл {humanize.intcomma(amount)}{UNIT}!")
                     self.accounts[ctx.author.id] += amount
+                    self.bank -= amount
                 else:
                     await ctx.send(f"{ctx.author.mention}Ты проиграл {humanize.intcomma(amount)}{UNIT}!")
                     self.accounts[ctx.author.id] -= amount
-            elif self.accounts[member.id] >= amount and self.accounts[ctx.author.id] >= amount >= 1:
+                    self.bank += amount
+            elif self.accounts[member.id] >= amount >= 20 and self.accounts[ctx.author.id] >= amount >= 20:
                 random_key = random.randint(1, 10**4)
                 await ctx.send(f"{member.mention}, Вас вызывают на дуэль! Ставка: {humanize.intcomma(amount)}")
                 self.invites[ctx.author.id] = (member.id, random_key, amount)
@@ -75,14 +85,14 @@ class Casino(commands.Cog):
     @commands.command(aliases=["баланс", "coins", "purse"])
     async def balance(self, ctx):
         if ctx.channel.id == 757288748672221265:
-            await ctx.send(f"{ctx.author.mention}, у вас на балансе {self.accounts[ctx.author.id]}{UNIT}")
+            await ctx.send(f"{ctx.author.mention}, у вас на балансе {humanize.intcomma(self.accounts[ctx.author.id])}{UNIT}")
 
-    @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        if payload.message_id == 757883097881640980 and not payload.member.id in self.accounts.keys():
-            await payload.member.add_roles(self.client.get_guild(payload.guild_id).get_role(757899902222204961))
-            self.accounts[payload.member.id] = 500
-            await payload.member.send("Ваш аккаунт в казино был создан. Стартовый баланс: 500" + UNIT)
+    @commands.command()
+    async def claim(self, ctx):
+        if (self.giveaway1_claim) and (self.bank > self.giveaway1_amount) and (ctx.author.id not in self.giveaway1_claimed):
+            self.accounts[ctx.author.id] += self.giveaway1_amount
+            self.giveaway1_claimed.append(ctx.author.id)
+            await ctx.send(f"{ctx.author.mention} Вы забрали свой приз")
     
     #
     #  admin-only
@@ -90,16 +100,35 @@ class Casino(commands.Cog):
     @commands.command()
     @commands.check(is_developer)
     async def give(self, ctx, member:discord.Member, amount:int):
-        self.accounts[member.id] += amount
+        if amount < self.bank and amount > 0:
+            self.accounts[member.id] += amount
+        elif 
     
     @commands.command()
     @commands.check(is_developer)
-    async def savecasino(self, ctx):
-        await ctx.author.send(f"```{self.accounts}```")
+    async def setvalue(self, ctx, var:str, value:int):
+        if var == "bank":
+            self.bank = value
+        elif var == "win_chance_a":
+            self.win_chance_a = value
+        elif var == "win_chance_b":
+            self.win_chance_b = value
+        elif var == "giveaway1_amount":
+            self.giveaway1_amount = value
     
     @commands.command()
     @commands.check(is_developer)
-    async def loadcasino(self, ctx, *, dictionary):
+    async def startgiveaway(self, ctx):
+        self.giveaway1_task.start()
+
+    @commands.command()
+    @commands.check(is_developer)
+    async def casinoinfo(self, ctx):
+        await ctx.author.send(f"accounts: ```{self.accounts}```, bank: {self.bank}, win_chance_a: {self.win_chance_a}, win_chance_b: {self.win_chance_b}, giveaway1_amount: {self.giveaway1_amount}")
+    
+    @commands.command()
+    @commands.check(is_developer)
+    async def loadaccounts(self, ctx, *, dictionary):
         self.accounts = eval(dictionary)
     
     #
@@ -111,7 +140,33 @@ class Casino(commands.Cog):
             pass
         else:
             print(err)
+    #
+    #  tasks
+    #
+    @tasks.loop(minutes=30)
+    async def giveaway1_task(self):
+        content = f"@here Проводится раздача коинов по {self.giveaway1_amount}{UNIT} на человека! Чтобы забрать свою введите команду >claim"
+        message = await self.client.get_channel(757288748672221265).send(content)
 
+        self.giveaway1_claimed = []
+        self.giveaway1_claim = True
+        await asyncio.sleep(900)
+        self.giveaway1_claim = False
+
+        await message.delete()
+    #
+    #  events
+    #
+    @commands.Cog.listener()
+    async def on_ready(self):
+        self.giveaway1_task.start()
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        if payload.message_id == 757883097881640980 and not payload.member.id in self.accounts.keys():
+            await payload.member.add_roles(self.client.get_guild(payload.guild_id).get_role(757899902222204961))
+            self.accounts[payload.member.id] = 500
+            await payload.member.send("Ваш аккаунт в казино был создан. Стартовый баланс: 500" + UNIT)
 
 def setup(client):
     client.add_cog(Casino(client))
